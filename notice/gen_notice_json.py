@@ -71,6 +71,13 @@ def ensure_output_dir(path: Path) -> Path:
     return path
 
 
+def resolve_output_dir(raw_output_dir: str) -> Path:
+    output_dir = Path(raw_output_dir)
+    if output_dir.is_absolute():
+        return output_dir
+    return Path(__file__).resolve().parent / output_dir
+
+
 def write_json_file(path: Path, data: Mapping[str, str]) -> Path:
     json_text = json.dumps(data, ensure_ascii=False, indent=2)
     path.write_text(json_text, encoding="utf-8")
@@ -85,7 +92,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--author", required=True, type=str, help="作者")
     parser.add_argument("--theme", default="", type=str, help="主题图片 URL")
     parser.add_argument("--content", required=True, type=str, help="公告内容")
-    parser.add_argument("--output-dir", default=".", type=str, help="输出目录")
+    parser.add_argument("--output-dir", default=".", type=str, help="输出目录（相对路径基于脚本目录）")
     parser.add_argument("--file-name", default="notice_update.json", type=str, help="文件名")
     return parser.parse_args(argv)
 
@@ -143,7 +150,7 @@ def main(argv: Sequence[str]) -> int:
         content=content,
     )
 
-    output_dir = ensure_output_dir(Path(args.output_dir))
+    output_dir = ensure_output_dir(resolve_output_dir(args.output_dir))
     output_path = output_dir / args.file_name
 
     written_path = write_json_file(output_path, notice.to_dict())
