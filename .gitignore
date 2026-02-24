@@ -1,2 +1,4 @@
 .DS_Store
 ./notice/notice_update.json
+__pycache__/
+*.py[cod]
