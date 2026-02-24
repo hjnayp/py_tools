@@ -1,8 +1,8 @@
 {
-  "channel": "tt",
-  "environment": "111test",
-  "title": "测试1",
+  "channel": "android",
+  "environment": "test",
+  "title": "公告标题",
   "author": "运营团队",
-  "theme": "11",
-  "content": "111"
+  "theme": "images/gsgk_theme_01.png",
+  "content": "11"
 }

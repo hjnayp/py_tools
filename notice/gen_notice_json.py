@@ -132,6 +132,23 @@ def upload_to_oss(args: argparse.Namespace, local_file: Path) -> None:
         raise RuntimeError(f"上传失败，退出码: {result.returncode}")
 
 
+def send_notify_markdown(content: str) -> None:
+    notify_script = Path(__file__).resolve().parents[1] / "notify_robot" / "notify_markdown.py"
+    if not notify_script.exists():
+        raise FileNotFoundError(f"未找到通知脚本: {notify_script}")
+    
+    command = [
+        sys.executable,
+        str(notify_script),
+        "--content",
+        content,
+    ]
+
+    result = subprocess.run(command, check=False)
+    if result.returncode != 0:
+        raise RuntimeError(f"发送企业微信通知失败，退出码: {result.returncode}")
+
+
 def main(argv: Sequence[str]) -> int:
     args = parse_args(argv)
 
@@ -158,6 +175,9 @@ def main(argv: Sequence[str]) -> int:
     print(f"JSON 已生成: {written_path}")
     print(json.dumps(notice.to_dict(), ensure_ascii=False, indent=2))
     upload_to_oss(args, written_path)
+    notify_content = f"# 公告更新\n{json.dumps(notice.to_dict(), ensure_ascii=False, indent=2)}"
+    send_notify_markdown(notify_content)
+
     return 0
 
 
