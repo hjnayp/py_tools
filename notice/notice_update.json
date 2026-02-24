@@ -1,8 +1,8 @@
 {
-  "channel": "tt",
-  "environment": "111test",
-  "title": "测试1",
-  "author": "运营团队",
-  "theme": "11",
-  "content": "111"
+  "channel": "channel",
+  "environment": "environment",
+  "title": "title",
+  "author": "author",
+  "theme": "img_path",
+  "content": "content"
 }
