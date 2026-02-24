@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -89,6 +90,41 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def get_oss_args(args: argparse.Namespace) -> list[str]:
+    stage = "2" if args.env == "prod" else "1"
+    channel = args.channel.strip()
+    if channel == "":
+        raise ValueError("渠道不能为空")
+
+    return [
+        "--stage",
+        stage,
+        "--channel",
+        channel,
+        "--remote-subdir",
+        "notice/",
+        "--force",
+        "--update",
+    ]
+
+
+def upload_to_oss(args: argparse.Namespace, local_file: Path) -> None:
+    upload_script = Path(__file__).resolve().parents[1] / "oss" / "upload_oss.py"
+    if not upload_script.exists():
+        raise FileNotFoundError(f"未找到上传脚本: {upload_script}")
+
+    command = [
+        sys.executable,
+        str(upload_script),
+        str(local_file.resolve()),
+        *get_oss_args(args),
+    ]
+
+    result = subprocess.run(command, check=False)
+    if result.returncode != 0:
+        raise RuntimeError(f"上传失败，退出码: {result.returncode}")
+
+
 def main(argv: Sequence[str]) -> int:
     args = parse_args(argv)
 
@@ -114,6 +150,7 @@ def main(argv: Sequence[str]) -> int:
 
     print(f"JSON 已生成: {written_path}")
     print(json.dumps(notice.to_dict(), ensure_ascii=False, indent=2))
+    upload_to_oss(args, written_path)
     return 0
 
 

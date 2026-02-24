@@ -1,8 +1,8 @@
 {
-  "channel": "tt",
+  "channel": "android",
   "environment": "test",
-  "title": "t",
-  "author": "a",
+  "title": "testMail",
+  "author": "nayun",
   "theme": "",
-  "content": "c"
+  "content": "ccccc"
 }
