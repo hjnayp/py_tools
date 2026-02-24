@@ -1,8 +1,8 @@
 {
-  "channel": "android",
-  "environment": "test",
-  "title": "公告标题",
-  "author": "运营团队",
-  "theme": "images/gsgk_theme_01.png",
-  "content": "11"
+  "channel": "channel",
+  "environment": "environment",
+  "title": "title",
+  "author": "author",
+  "theme": "img_path",
+  "content": "content"
 }
