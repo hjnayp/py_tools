@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import base64
 import json
-import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -15,6 +14,7 @@ if str(PYTHON_TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(PYTHON_TOOLS_ROOT))
 
 from infra.oss.upload_oss import upload_oss
+from infra.notify_robot.notify_markdown import send_wecom_message
 
 # 生成公告数据的不可变结构
 @dataclass(frozen=True)
@@ -176,7 +176,7 @@ def get_oss_upload_params(args: argparse.Namespace) -> tuple[str, str]:
     if channel == "":
         raise ValueError("渠道不能为空")
 
-    return [stage, channel]
+    return (stage, channel)
 
 
 def upload_to_oss(args: argparse.Namespace, local_file: Path) -> None:
@@ -194,20 +194,16 @@ def upload_to_oss(args: argparse.Namespace, local_file: Path) -> None:
 
 
 def send_notify_markdown(content: str) -> None:
-    notify_script = Path(__file__).resolve().parents[1] / ".." /"infra" / "notify_robot" / "notify_markdown.py"
-    if not notify_script.exists():
-        raise FileNotFoundError(f"未找到通知脚本: {notify_script}")
+    """
+    发送 Markdown 通知到企业微信机器人
     
-    command = [
-        sys.executable,
-        str(notify_script),
-        "--content",
-        content,
-    ]
-
-    result = subprocess.run(command, check=False)
-    if result.returncode != 0:
-        raise RuntimeError(f"发送企业微信通知失败，退出码: {result.returncode}")
+    :param content: Markdown 格式的消息内容
+    :raises RuntimeError: 当发送失败时抛出异常
+    """
+    result = send_wecom_message(content)
+    if result.get("errcode") != 0:
+        error_msg = result.get("errmsg", "未知错误")
+        raise RuntimeError(f"发送企业微信通知失败: {error_msg}")
 
 
 def main(argv: Sequence[str]) -> int:

@@ -5,13 +5,14 @@ import argparse
 import json
 import urllib.error
 import urllib.request
+from typing import Any
 
 
 DEFAULT_WEBHOOK_KEY = "54729f17-3a23-4614-aaec-364432f01e4b"
 DEFAULT_WEBHOOK_URL = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send"
 
 
-def send_wecom_message(content: str, webhook_key: str = DEFAULT_WEBHOOK_KEY) -> dict:
+def send_wecom_message(content: str, webhook_key: str = DEFAULT_WEBHOOK_KEY) -> dict[str, Any]:
     payload = {
         "msgtype": "markdown",
         "markdown": {
