@@ -1,0 +1,8 @@
+{
+  "channel": "android",
+  "environment": "test",
+  "title": "base64 test",
+  "author": "运营团队",
+  "theme": "demo",
+  "content": "第一行\n第二行"
+}
